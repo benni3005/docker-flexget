@@ -1,8 +1,8 @@
-# cpoppema/docker-flexget
+[![logo](https://flexget.com/_static/flexget.png)](https://flexget.com/)
 
-Read all about FlexGet [here](http://www.flexget.com/#Description).
+# FlexGet in Docker (with UI)
 
-An example FlexGet config.yml can be found at the bottom of [this page](http://flexget.com/Cookbook/Series/SeriesPresetMultipleRSStoTransmission).
+Forked from [cpoppema/docker-flexget](https://github.com/cpoppema/docker-flexget) and updated with some additional packages.
 
 ## Usage
 
@@ -13,12 +13,12 @@ docker create \
     -p 5050:5050 \
     -v <path to data>:/config \
     -v <path to downloads>:/downloads \
-    cpoppema/docker-flexget
+    derbenni/docker-flexget
 ```
 
 This container is based on phusion-baseimage with ssh removed. For shell access whilst the container is running do `docker exec -it flexget /bin/bash`.
 
-**Parameters**
+### Parameters
 
 * `-e PGID` for GroupID - see below for explanation
 * `-e PUID` for UserID - see below for explanation
@@ -26,17 +26,21 @@ This container is based on phusion-baseimage with ssh removed. For shell access 
 * `-v /config` - Location of FlexGet config.yml (DB files will be created on startup and also live in this directory)
 * `-v /downloads` - location of downloads on disk
 
-**Transmission**
+### First run
+
+**This is important**: Before running this container for the first time make sure there's a `config.yml` available in the host directory mounted at `/config`. There's no default config file provided, because everyone uses FlexGet differently. Take a look at [this page](http://flexget.com/Cookbook/Series/SeriesPresetMultipleRSStoTransmission) for a good example of a basic `config.yml`.
+
+### Transmission
 
 FlexGet is able to connect with transmission using `transmissionrpc`, which is pre-installed in this container. For more details, see http://flexget.com/wiki/Plugins/transmission.
 
 Please note: This Docker image does NOT run Transmission. Consider running a [Transmission Docker image](https://github.com/linuxserver/docker-transmission/) alongside this one.
 
-**Daemon mode**
+### Daemon mode
 
 This container runs flexget in [daemon mode](https://flexget.com/Daemon). This means by default it will run your configured tasks every hour after you've started it for the first time. If you want to run your tasks on the hour or at a different time, look at the [scheduler](https://flexget.com/Plugins/Daemon/scheduler) plugin for configuration options. Configuration is automatically reloaded every time just before starting the tasks as scheduled, to apply your changes immediately you will need to restart the container.
 
-**Web UI**
+### Web UI
 
 FlexGet is able to host a Web UI if you have this enabled in your configuration file. See [the wiki](https://flexget.com/wiki/Web-UI) for all details. To get started, simply add:
 
@@ -60,7 +64,7 @@ flexget -c /config/config.yml web passwd <some_password>
 
 Now you can open the Web UI at `http://<ip-of-the-machine-running-docker>:5050` and login with this password, use `flexget` as your username.
 
-### User / Group Identifiers
+## User / Group Identifiers
 
 **TL;DR** - The `PGID` and `PUID` values set the user / group you'd like your container to 'run as' to the host OS. This can be a user you've created or even root (not recommended).
 
@@ -70,6 +74,3 @@ Part of what makes this container work so well is by allowing you to specify you
 
 * Upgrade to the latest version of FlexGet simply `docker restart flexget`.
 * Monitor the logs of the container in realtime `docker logs -f flexget`.
-
-**Credits**
-* [linuxserver.io](https://github.com/linuxserver) for providing awesome docker containers.
